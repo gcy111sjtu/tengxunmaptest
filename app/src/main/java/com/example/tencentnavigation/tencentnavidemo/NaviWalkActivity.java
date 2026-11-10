@@ -22,6 +22,7 @@ public class NaviWalkActivity extends AppCompatActivity {
 
     private TencentWalkNaviManager mWalkManager;
     private WalkNaviView mWalkNaviView;
+    private volatile boolean destroyed;
 
     private CarNaviInfoPanel.OnNaviInfoListener onNaviInfoListener
             = () -> stopNavi();
@@ -56,11 +57,17 @@ public class NaviWalkActivity extends AppCompatActivity {
 
                         @Override
                         public void onRouteSearchSuccess(ArrayList<RouteData> route) {
-                            Toast.makeText(NaviWalkActivity.this
-                                    , "算路成功", Toast.LENGTH_SHORT).show();
-
-                            // 开始导航
-                            startNavi();
+                            if (route == null || route.isEmpty() || destroyed) {
+                                return;
+                            }
+                            // 算路回调可能来自 SDK 工作线程，UI 与导航视图操作统一切回主线程。
+                            runOnUiThread(() -> {
+                                if (!destroyed && !isFinishing()) {
+                                    Toast.makeText(NaviWalkActivity.this
+                                            , "算路成功", Toast.LENGTH_SHORT).show();
+                                    startNavi();
+                                }
+                            });
                         }
 
                     });
@@ -99,7 +106,6 @@ public class NaviWalkActivity extends AppCompatActivity {
 
         // 导航面板
         mWalkNaviView.setNaviPanelEnabled(true);
-        mWalkNaviView.setNaviPanelEnabled(true);
 
         // 开启默认UI
         CarNaviInfoPanel topNaviInfo = mWalkNaviView.showNaviInfoPanel();
@@ -116,10 +122,21 @@ public class NaviWalkActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        destroyed = true;
+        if (mWalkManager != null) {
+            try {
+                mWalkManager.stopNavi();
+                if (mWalkNaviView != null) {
+                    mWalkManager.removeTencentNaviListener(mWalkNaviView);
+                }
+            } catch (Exception ignored) {
+                // SDK 清理失败时仍需继续释放导航视图。
+            }
+        }
         if (mWalkNaviView != null) {
             mWalkNaviView.onDestroy();
         }
+        super.onDestroy();
     }
 
     @Override
