@@ -2,36 +2,80 @@ package com.example.tencentnavigation.tencentnavidemo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tencentnavigation.tencentnavidemo.location.TnkLocationAdapter;
+import com.tencent.map.navi.TencentNavi;
 
 import java.util.ArrayList;
 
 public class IndexActivity extends BasePermissionActivity implements AdapterView.OnItemClickListener {
 
+    private static final String PREFS_NAME = "tencent_navi_settings";
+    private static final String PREF_MAP_KEY = "map_key";
+
     private ListView listIndex;
     private myAdpter myadpter;
+    private EditText mapKeyInput;
+    private TextView mapKeyStatus;
+    private boolean keyConfigured;
+    private boolean locationStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+        initMapKey();
         initListView();
+    }
 
-        // 进入导航就开启普适定位
-        TnkLocationAdapter.mTnkLocationSingleton.get().setContext(getApplicationContext());
-        TnkLocationAdapter.mTnkLocationSingleton.get().startTNKLocationAdapter();
+    private void initMapKey() {
+        mapKeyInput = findViewById(R.id.map_key_input);
+        mapKeyStatus = findViewById(R.id.map_key_status);
+        Button saveButton = findViewById(R.id.save_map_key);
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String savedKey = preferences.getString(PREF_MAP_KEY, "");
+        mapKeyInput.setText(savedKey);
+        if (!TextUtils.isEmpty(savedKey)) {
+            configureSdk(savedKey);
+        }
+        saveButton.setOnClickListener(v -> {
+            String key = mapKeyInput.getText().toString().trim();
+            if (TextUtils.isEmpty(key)) {
+                Toast.makeText(this, R.string.map_key_required, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            preferences.edit().putString(PREF_MAP_KEY, key).apply();
+            configureSdk(key);
+            Toast.makeText(this, R.string.map_key_configured, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void configureSdk(String key) {
+        TencentNavi.Config config = new TencentNavi.Config().setNavKey(key);
+        TencentNavi.init(getApplicationContext(), config);
+        keyConfigured = true;
+        mapKeyStatus.setText(R.string.map_key_configured);
+        if (!locationStarted) {
+            // Key 就绪后再启动导航定位，避免 SDK 在空 Key 状态下初始化。
+            TnkLocationAdapter.mTnkLocationSingleton.get().setContext(getApplicationContext());
+            TnkLocationAdapter.mTnkLocationSingleton.get().startTNKLocationAdapter();
+            locationStarted = true;
+        }
     }
 
     public void initListView(){
@@ -108,6 +152,12 @@ public class IndexActivity extends BasePermissionActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position != 0 && position != 4 && position != 13 && position != 16
+                && !keyConfigured) {
+            Toast.makeText(this, R.string.map_key_required, Toast.LENGTH_SHORT).show();
+            mapKeyInput.requestFocus();
+            return;
+        }
         switch (position){
             case 1:
                 //路线规划

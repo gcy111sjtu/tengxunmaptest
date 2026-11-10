@@ -33,6 +33,30 @@
       android:value="输入申请的开发者权限"/>
 </application>
 ```
+
+当前 Demo 也支持在首页手动输入并保存 Key，无需修改 Manifest 后重新编译。
+
+### 命令行编译
+
+项目根目录提供 `build_android.sh`，其环境检查和 wrapper 调用方式参考
+`simbavoipclient/metartc-intercom/examples/android`：
+
+```sh
+JAVA_HOME=/path/to/jdk8 \
+ANDROID_SDK_ROOT=/path/to/android-sdk \
+./build_android.sh debug
+
+# Release（未配置正式签名，产物为 unsigned APK）
+./build_android.sh release
+
+# 清理
+./build_android.sh clean
+```
+
+该工程固定使用 Gradle 5.6.4、Android Gradle Plugin 3.6.3 和 compileSdk 29，
+因此脚本要求 JDK 8 与 Android SDK Platform 29。Debug APK 输出到
+`app/build/outputs/apk/debug/app-debug.apk`。
+
 <div id="ProSet"></div>
 
 ### 工程配置

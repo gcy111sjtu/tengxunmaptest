@@ -23,7 +23,16 @@
     <string name="navi_panel_hide">设置是否隐藏导航面板</string>
 
     <string name="navi_panel_style">自定义导航面板</string>
-    <string name="navi_speed_style">自定义限速样式</string>
+    <string name="navi_speed_style">线路限速查看与导出（模拟导航）</string>
+    <string name="map_key_title">腾讯地图导航 Key</string>
+    <string name="map_key_hint">请手动输入 Key</string>
+    <string name="save_key">保存并启用</string>
+    <string name="map_key_not_configured">尚未配置 Key，地图与导航功能不可用</string>
+    <string name="map_key_configured">Key 已配置，可进入地图与导航功能</string>
+    <string name="map_key_required">请先输入并保存腾讯地图导航 Key</string>
+    <string name="speed_limit_empty">等待模拟导航返回道路限速数据…</string>
+    <string name="speed_limit_export">导出 CSV</string>
+    <string name="speed_limit_clear">清空记录</string>
 
     <string name="navi_addnew_style">导航配置设置(新加功能)</string>
     <string name="navi_bounce_style">设置用户拖动地图进入回弹模式</string>
