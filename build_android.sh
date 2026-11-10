@@ -53,6 +53,9 @@ esac
 # intentionally kept on JDK 8; modern Android Studio JBR 17 cannot run Gradle 5.6.4.
 if [ -n "${JAVA_HOME:-}" ]; then
     JAVA_CMD="$JAVA_HOME/bin/java"
+elif [ "$(uname -s)" = "Darwin" ] && [ -x /usr/libexec/java_home ]; then
+    DETECTED_JAVA_HOME="$(/usr/libexec/java_home -v 1.8 2>/dev/null || true)"
+    JAVA_CMD="${DETECTED_JAVA_HOME:+$DETECTED_JAVA_HOME/bin/java}"
 else
     JAVA_CMD="$(command -v java || true)"
 fi
@@ -113,7 +116,7 @@ case "$MODE" in
         ;;
     release)
         TASK=":app:assembleRelease"
-        APK="$PROJECT_ROOT/app/build/outputs/apk/release/app-release-unsigned.apk"
+        APK="$PROJECT_ROOT/app/build/outputs/apk/release/app-release.apk"
         ;;
     clean)
         TASK=":app:clean"
@@ -138,5 +141,9 @@ if [ -n "$APK" ]; then
     fi
     echo
     echo "built: $APK"
-    sha256sum "$APK" 2>/dev/null || true
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$APK"
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$APK"
+    fi
 fi

@@ -46,7 +46,7 @@ JAVA_HOME=/path/to/jdk8 \
 ANDROID_SDK_ROOT=/path/to/android-sdk \
 ./build_android.sh debug
 
-# Release（未配置正式签名，产物为 unsigned APK）
+# Release（内部测试使用 debug keystore 自动签名）
 ./build_android.sh release
 
 # 清理
@@ -56,6 +56,21 @@ ANDROID_SDK_ROOT=/path/to/android-sdk \
 该工程固定使用 Gradle 5.6.4、Android Gradle Plugin 3.6.3 和 compileSdk 29，
 因此脚本要求 JDK 8 与 Android SDK Platform 29。Debug APK 输出到
 `app/build/outputs/apk/debug/app-debug.apk`。
+
+Release 采用与 SimbaIntercom Android Demo 相同的内部测试约定：使用 debug keystore
+自动签名，输出 `app/build/outputs/apk/release/app-release.apk`，可以直接安装，但不能作为
+应用商店正式签名。
+
+生成版本化客户交付包：
+
+```sh
+./build_android.sh release
+./package_android_release.sh
+```
+
+交付结果位于 `dist/TencentNaviSpeedLimit-<version>-android/`，并生成对应 `.tar.gz`
+和 `.tar.gz.sha256`。目录中包含已签名 APK、README、`DELIVERY_INFO.txt` 与
+逐文件 `SHA256SUMS`。脚本不会覆盖已存在的同版本交付物。
 
 <div id="ProSet"></div>
 

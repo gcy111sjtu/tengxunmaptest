@@ -23,6 +23,9 @@ android {
         release {
             debuggable false
             minifyEnabled false
+            // Demo 发布约定：使用 debug keystore，确保 assembleRelease 产物可直接安装。
+            // 正式上架应用商店时必须替换为独立且妥善保管的 release keystore。
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
         }
