@@ -1,5 +1,9 @@
 package com.example.tencentnavigation.tencentnavidemo;
 
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -12,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tencent.map.navi.TencentRouteSearchCallback;
 import com.tencent.map.navi.car.CarRouteSearchOptions;
@@ -91,8 +97,9 @@ public class RouteActivity extends AppCompatActivity {
         try {
             carNaviManager.searchRoute(start, dest, wayPoints, options, routeSearchCallback);
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("routePlan:","鉴权异常" + e.getLocalizedMessage());
+            String detail = messageOf(e, "SDK 未返回具体原因");
+            Log.e("routePlan", "鉴权失败：" + detail, e);
+            showCopyableFailure("鉴权失败", detail);
         }
     }
 
@@ -103,7 +110,10 @@ public class RouteActivity extends AppCompatActivity {
         @Override
         public void onRouteSearchFailure(int i, String s) {
             //i错误码提示:1001为网络错误，1002为无网络，2001为返回数据无效（或空），2002为起终点参数错误，2003为途经点参数错误，2004为吸附失败，2005为算路失败，2999为服务器内部错误
-            Log.e("route","error:"+i);
+            String detail = "错误码：" + i + "\n错误信息："
+                    + (s == null || s.trim().isEmpty() ? "SDK 未返回具体原因" : s);
+            Log.e("route", detail.replace('\n', ' '));
+            showCopyableFailure("路线规划失败", detail);
         }
 
         @Override
@@ -115,6 +125,43 @@ public class RouteActivity extends AppCompatActivity {
             addMarkerPass(wayPoints);
         }
     };
+
+    private String messageOf(Exception exception, String fallback) {
+        String message = exception.getLocalizedMessage();
+        return message == null || message.trim().isEmpty() ? fallback : message;
+    }
+
+    /**
+     * 失败详情既支持长按选择，也可通过按钮直接复制，方便反馈鉴权信息。
+     */
+    private void showCopyableFailure(String title, String detail) {
+        runOnUiThread(() -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
+
+            TextView messageView = new TextView(this);
+            int padding = (int) (24 * getResources().getDisplayMetrics().density + 0.5f);
+            messageView.setPadding(padding, padding / 2, padding, 0);
+            messageView.setText(detail);
+            messageView.setTextIsSelectable(true);
+
+            new AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setView(messageView)
+                    .setPositiveButton("复制", (dialog, which) -> {
+                        ClipboardManager clipboard = (ClipboardManager)
+                                getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard != null) {
+                            clipboard.setPrimaryClip(ClipData.newPlainText(
+                                    title, title + "\n" + detail));
+                            Toast.makeText(this, "失败信息已复制", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("关闭", null)
+                    .show();
+        });
+    }
 
     /**
      * 添加路线及其他marker
