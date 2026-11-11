@@ -48,7 +48,10 @@ public class TnkLocationAdapter {
     }
 
     // 开始定位
-    public void startTNKLocationAdapter() {
+    public synchronized void startTNKLocationAdapter() {
+        if (adapter != null) {
+            return;
+        }
         adapter = FusionGeoLocationAdapter.getInstance(mContext);
         adapter.addLocationObserver(observer, 1000);
     }

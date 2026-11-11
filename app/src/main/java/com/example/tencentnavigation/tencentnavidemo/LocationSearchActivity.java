@@ -3,6 +3,7 @@ package com.example.tencentnavigation.tencentnavidemo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -145,11 +146,11 @@ public class LocationSearchActivity extends AppCompatActivity {
                 //请求地址
                 final StringBuilder path = new StringBuilder();
                 path.append(getResources().getString(R.string.url))
-                        .append("region=北京")
+                        .append("region=").append(Uri.encode("全国"))
                         .append("&page_index=1")
                         .append("&page_size=10")
                         .append("&key=").append(NaviUtil.getAuthKey(getApplicationContext()))
-                        .append("&keyword=").append(str);
+                        .append("&keyword=").append(Uri.encode(str));
                 try {
                     URL url = new URL(path.toString());
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();

@@ -69,6 +69,12 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/select_destination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_destination" />
+
+            <Button
                 android:id="@+id/clear_speed_limits"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,6 +86,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/speed_limit_export" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/real_navigation_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/real_navigation_waiting_location"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
 
         <ScrollView
             android:layout_width="match_parent"

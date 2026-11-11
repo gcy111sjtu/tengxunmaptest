@@ -23,7 +23,7 @@
     <string name="navi_panel_hide">设置是否隐藏导航面板</string>
 
     <string name="navi_panel_style">自定义导航面板</string>
-    <string name="navi_speed_style">线路限速查看与导出（模拟导航）</string>
+    <string name="navi_speed_style">真实道路限速采集与导出</string>
     <string name="map_key_title">腾讯地图导航 Key</string>
     <string name="map_key_hint">请手动输入 Key</string>
     <string name="save_key">保存并启用</string>
@@ -31,8 +31,17 @@
     <string name="map_key_configured">Key 已配置，可进入地图与导航功能</string>
     <string name="map_key_required">请先输入并保存腾讯地图导航 Key</string>
     <string name="speed_limit_empty">等待模拟导航返回道路限速数据…</string>
+    <string name="speed_limit_empty_real">等待真实导航返回道路限速数据…</string>
     <string name="speed_limit_export">导出 CSV</string>
     <string name="speed_limit_clear">清空记录</string>
+    <string name="select_destination">选择目的地</string>
+    <string name="real_navigation_waiting_location">正在等待 GPS 定位…</string>
+    <string name="real_navigation_select_destination">定位成功，请选择目的地</string>
+    <string name="real_navigation_location_ready">定位成功，正在准备路线…</string>
+    <string name="real_navigation_calculating">正在规划前往“%1$s”的真实路线…</string>
+    <string name="real_navigation_route_failed">算路失败：%1$s</string>
+    <string name="real_navigation_started">真实导航已启动，请沿规划路线安全行驶</string>
+    <string name="real_navigation_permission_required">需要定位权限才能采集真实道路限速</string>
 
     <string name="navi_addnew_style">导航配置设置(新加功能)</string>
     <string name="navi_bounce_style">设置用户拖动地图进入回弹模式</string>

@@ -22,6 +22,8 @@ public class NaviUtil {
 
     private static final String SDK_KEY_OLD = "TencentMapSDK";
     private static final String SDK_KEY = "com.tencent.map.api_key";
+    private static final String PREFS_NAME = "tencent_navi_settings";
+    private static final String PREF_MAP_KEY = "map_key";
     private static final String IS_KEY_VALID = "IsKeyValid";
     private static final String USER_ID = "UserId";
     private static final String CACHE_EXPIRE = "CacheExpire";
@@ -55,12 +57,13 @@ public class NaviUtil {
         if (context == null) {
             return "";
         }
-        String key = "";
+        String key = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(PREF_MAP_KEY, "");
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
                     context.getPackageName(),
                     PackageManager.GET_META_DATA);
-            if (appInfo.metaData != null) {
+            if (TextUtils.isEmpty(key) && appInfo.metaData != null) {
                 key = appInfo.metaData.getString(SDK_KEY);
             }
             if (TextUtils.isEmpty(key) && appInfo.metaData != null) {
